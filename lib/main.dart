@@ -1,8 +1,12 @@
+import 'dart:ui';
+
+import 'package:app_with_rinf_bevy/messages/basic.pb.dart';
 import 'package:flutter/material.dart';
+import 'package:rinf/rinf.dart';
 import './messages/generated.dart';
 
 void main() async {
-  await initializeRust();
+  await initializeRust(assignRustSignal);
   runApp(const MyApp());
 }
 
@@ -58,6 +62,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  late final AppLifecycleListener _listener;
+
+  @override
+  void initState() {
+    super.initState();
+    _listener = AppLifecycleListener(
+      onExitRequested: () async {
+        debugPrint("Exit");
+        finalizeRust(); // This line shuts down the async Rust runtime.
+        return AppExitResponse.exit;
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _listener.dispose();
+    super.dispose();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -68,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+    SmallText(text: "Neuer Wert: $_counter").sendSignalToRust();
   }
 
   @override
@@ -114,6 +138,21 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            StreamBuilder<RustSignal<SmallNumber>>(
+              stream: SmallNumber.rustSignalStream,
+              builder: (BuildContext context,
+                  AsyncSnapshot<RustSignal<SmallNumber>> snapshot) {
+                if (snapshot.hasData) {
+                  // e.g. GlobalState is a message from rust code
+                  // with field state representing percentage of
+                  // initialized backend procedures
+                  return Text(
+                      "Finished Loading: ${snapshot.data!.message.number}");
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
+            )
           ],
         ),
       ),

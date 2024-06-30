@@ -91,6 +91,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  internet_connection_checker:
+    dependency: transitive
+    description:
+      name: internet_connection_checker
+      sha256: "1c683e63e89c9ac66a40748b1b20889fd9804980da732bf2b58d6d5456c8e876"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+1"
   lints:
     dependency: transitive
     description:
@@ -150,11 +158,12 @@ packages:
   rinf:
     dependency: "direct main"
     description:
-      name: rinf
-      sha256: "2cd5cae1e414fbab1e5e432c3556bffd2e4138c247e38f02e4f875611e602d5d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.11.1"
+      path: flutter_ffi_plugin
+      ref: HEAD
+      resolved-ref: "584dcf4ce3bd446993e0abf3e5c9b028b93c3f22"
+      url: "https://github.com/Deep-co-de/rinf"
+    source: git
+    version: "6.13.0"
   sky_engine:
     dependency: transitive
     description: flutter
